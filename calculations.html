@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Calculations — Menstrual Cycle Tracker</title>
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <main>
+            <h1>Menstrual Cycle Tracker — Calculations</h1>
+
+            <p>Welcome — enter your details below or use the saved values to see your next expected period.</p>
+
+            <form id="cycle-form" class="card" aria-labelledby="cycle-heading">
+                <h3 id="cycle-heading">🌸 Track Your Cycle</h3>
+
+                <div class="form-row">
+                    <label for="lastPeriod">🌷 First day of your last period</label>
+                    <input type="date" id="lastPeriod" name="last_period" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="cycleLength">🗓️ Average cycle length (days)</label>
+                    <input type="number" id="cycleLength" name="cycle_length" min="18" max="45" value="28" required></div>
+
+                <div class="form-row">
+                    <label for="periodDuration">🩸 Period duration (days)</label>
+                    <input type="number" id="periodDuration" name="period_duration" min="1" max="14" value="5" required>
+                </div>
+
+                <div class="form-row" id="actions">
+                    <button type="submit" class="btn">Save</button>
+                    <button type="button" id="clear-btn" class="btn" style="background:transparent;color:#B73E6E;border:1px solid rgba(183,62,110,0.12);margin-left:12px">Clear saved data</button>
+                </div>
+            </form>
+
+            <div id="result" aria-live="polite"></div>
+
+            <script src="index.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const clearBtn = document.getElementById('clear-btn');
+                    if (!clearBtn) return;
+                    clearBtn.addEventListener('click', () => {
+                        localStorage.removeItem('lastPeriod');
+                        localStorage.removeItem('cycleLength');
+                        localStorage.removeItem('periodDuration');
+                        const lastp = document.getElementById('lastPeriod');
+                        const cyclel = document.getElementById('cycleLength');
+                        const periodd = document.getElementById('periodDuration');
+                        if (lastp) lp.value = '';
+                        if (cyclel) cl.value = '';
+                        if (periodd) pd.value = '';
+                        const out = document.getElementById('result');
+                        if (out) out.textContent = 'Saved data cleared.';
+                    });
+                });
+            </script>
+        </main>
+    </body>
+</html>
+
+</main></body>
+</html>

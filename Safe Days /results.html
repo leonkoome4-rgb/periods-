@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Menstrual Cycle Tracker</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <main>
+      <strong><h1>Menstrual Cycle Tracker</h1></strong>
+
+      <form id="cycle-form" class="card" aria-labelledby="cycle-heading">
+        <h3 id="cycle-heading">🌸 Track Your Cycle</h3>
+
+        <div class="form-row">
+          <label for="lastPeriod">🌷 First day of your last period</label>
+          <input type="date" id="lastPeriod" name="last_period" required>
+        </div>
+
+        <div class="form-row">
+          <label for="cycleLength">🗓️ Average cycle length (days)</label>
+          <input type="number" id="cycleLength" name="cycle_length" min="18" max="45" value="28" required>
+        </div>
+
+        <div class="form-row">
+          <label for="periodDuration">🩸 Period duration (days)</label>
+          <input type="number" id="periodDuration" name="period_duration" min="1" max="14" value="5" required>
+        </div>
+
+        <div class="form-row">
+          <button type="submit" class="btn">Save</button>
+        </div>
+
+        <div id="result" aria-live="polite"></div>
+        <div class="helper">⚠️ This is an estimate, cycles may vary.</div>
+      </form>
+
+      <script src="index.js"></script>
+    </main>
+  </body>
+</html>

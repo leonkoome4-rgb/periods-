@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Your Next Period</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <main>
+      <strong><h1>Your Next Period</h1></strong>
+
+      <form id="next-period-form" class="card" aria-labelledby="next-heading">
+        <h3 id="next-heading">📅 Estimate Your Next Period</h3>
+
+        <div class="form-row">
+          <label for="lastPeriod">🌷 First day of last period</label>
+          <input type="date" id="lastPeriod" name="last_period" required>
+        </div>
+
+        <div class="form-row">
+          <label for="cycleLength">🗓️ Average cycle length (days)</label>
+          <input type="number" id="cycleLength" name="cycle_length" min="18" max="45" value="28" required>
+        </div>
+
+        <div class="form-row">
+          <label for="periodDuration">🩸 Period duration (days)</label>
+          <input type="number" id="periodDuration" name="period_duration" min="1" max="14" value="5" required>
+        </div>
+
+        <div class="form-row">
+          <button type="submit" class="btn">Calculate</button>
+        </div>
+
+        <section id="results-section" class="card results-card" aria-live="polite" hidden>
+          <h4>📅 Results</h4>
+          <div class="result-row"><strong>Next expected period start:</strong> <span id="nextStart"></span></div>
+          <div class="result-row"><strong>Expected end date:</strong> <span id="nextEnd"></span></div>
+          <div class="result-row"><strong>Fertile window (approx.):</strong> <span id="fertileWindow"></span></div>
+          <div class="result-row"><strong>Safe days (before):</strong> <span id="safeBefore"></span></div>
+          <div class="result-row"><strong>Safe days (after):</strong> <span id="safeAfter"></span></div>
+          <div class="helper" style="margin-top:8px">⚠️ This is an estimate, cycles may vary.</div>
+        </section>
+      </form>
+
+      <script>
+        function addDays(dateStr, days){
+          const d = new Date(dateStr);
+          d.setDate(d.getDate() + days);
+          return d;
+        }
+
+        function fmt(d){ return d.toLocaleDateString(); }
+
+        function renderResults(data){
+          const rs = document.getElementById('results-section');
+          document.getElementById('nextStart').textContent = fmt(data.nextStart);
+          document.getElementById('nextEnd').textContent = fmt(data.nextEnd);
+          document.getElementById('fertileWindow').textContent = `${fmt(data.fertileStart)} – ${fmt(data.fertileEnd)}`;
+          document.getElementById('safeBefore').textContent = `${fmt(data.safeStart1)} – ${fmt(data.safeEnd1)}`;
+          document.getElementById('safeAfter').textContent = `${fmt(data.safeStart2)} – ${fmt(data.safeEnd2)}`;
+          rs.hidden = false;
+        }
+
+        function calculateAndShow(last, cycle, dur){
+          const nextStart = addDays(last, cycle);
+          const nextEnd = addDays(nextStart, dur - 1);
+
+          const ovulation = addDays(last, cycle - 14);
+          const fertileStart = addDays(ovulation, -5);
+          const fertileEnd = addDays(ovulation, 1);
+
+          const safeStart1 = addDays(nextEnd, 1);
+          const safeEnd1 = addDays(fertileStart, -1);
+
+          const safeStart2 = addDays(fertileEnd, 1);
+          const safeEnd2 = addDays(nextStart, -1);
+
+          renderResults({nextStart, nextEnd, fertileStart, fertileEnd, safeStart1, safeEnd1, safeStart2, safeEnd2});
+        }
+
+        document.addEventListener('DOMContentLoaded', ()=>{
+          const last = localStorage.getItem('lastPeriod');
+          const cycle = localStorage.getItem('cycleLength');
+          const dur = localStorage.getItem('periodDuration');
+          if (last) document.getElementById('lastPeriod').value = last;
+          if (cycle) document.getElementById('cycleLength').value = cycle;
+          if (dur) document.getElementById('periodDuration').value = dur;
+
+          if (last && cycle && dur){
+            calculateAndShow(last, parseInt(cycle,10), parseInt(dur,10));
+          }
+
+          // When user submits here, save to localStorage so index.html will pick it up
+          document.getElementById('next-period-form').addEventListener('submit', function(e){
+            e.preventDefault();
+            const lastIn = document.getElementById('lastPeriod').value;
+            const cycleIn = parseInt(document.getElementById('cycleLength').value,10);
+            const durIn = parseInt(document.getElementById('periodDuration').value,10);
+            if (!lastIn || !cycleIn || !durIn) return;
+            localStorage.setItem('lastPeriod', lastIn);
+            localStorage.setItem('cycleLength', String(cycleIn));
+            localStorage.setItem('periodDuration', String(durIn));
+            calculateAndShow(lastIn, cycleIn, durIn);
+          })
+
+          
+
+          // Listen for storage changes from other tabs/pages and update inputs live
+          window.addEventListener('storage', (ev) => {
+            if (!ev.key) return;
+            if (ev.key === 'lastPeriod') document.getElementById('lastPeriod').value = ev.newValue || '';
+            if (ev.key === 'cycleLength') document.getElementById('cycleLength').value = ev.newValue || '';
+            if (ev.key === 'periodDuration') document.getElementById('periodDuration').value = ev.newValue || '';
+            // if all present, recalc
+            const l = localStorage.getItem('lastPeriod');
+            const c = localStorage.getItem('cycleLength');
+            const d = localStorage.getItem('periodDuration');
+            if (l && c && d) calculateAndShow(l, parseInt(c,10), parseInt(d,10));
+          });
+        });
+      </script>
+
+    </main>
+  </body>
+</html>
